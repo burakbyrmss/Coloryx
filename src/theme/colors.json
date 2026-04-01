@@ -15,5 +15,11 @@
   },
   "slider": {
     "trackMax": "#3f3f46"
+  },
+  "home": {
+    "odd": "#221830",
+    "remember": "#102428",
+    "odd-bright": "#c4b5fd",
+    "remember-bright": "#5eead4"
   }
 }

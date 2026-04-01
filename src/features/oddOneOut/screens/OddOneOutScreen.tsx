@@ -23,6 +23,16 @@ type Nav = NativeStackNavigationProp<RootStackParamList, 'OddOneOut'>;
 const CORRECT_DELAY_MS = 420;
 const WRONG_DELAY_MS = 720;
 
+function formatElapsedSeconds(totalSec: number): string {
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  if (h > 0) {
+    return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  }
+  return `${m}:${String(s).padStart(2, '0')}`;
+}
+
 export function OddOneOutScreen() {
   const navigation = useNavigation<Nav>();
   const dispatch = useAppDispatch();
@@ -31,7 +41,18 @@ export function OddOneOutScreen() {
   const hapticsEnabled = useAppSelector(s => s.settings.hapticsEnabled);
 
   const [lastWrongTap, setLastWrongTap] = useState<number | null>(null);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const pendingNav = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (!odd) {
+      return;
+    }
+    const id = setInterval(() => {
+      setElapsedSeconds(sec => sec + 1);
+    }, 1000);
+    return () => clearInterval(id);
+  }, [odd]);
 
   useEffect(() => {
     dispatch(startOddOneOut());
@@ -73,12 +94,19 @@ export function OddOneOutScreen() {
     const id = setTimeout(() => {
       if (outOfLives) {
         const wasNew = finalScore > bestOdd;
+        const lastBoard = {
+          baseHue: odd.baseHue,
+          baseSaturation: odd.baseSaturation,
+          baseBrightness: odd.baseBrightness,
+          oddIndex: odd.oddIndex,
+          oddSaturation: odd.oddSaturation,
+        };
         dispatch(considerBestScore({ mode: 'oddOneOut', score: finalScore }));
         dispatch(continueAfterWrong());
-        navigation.replace('Result', {
-          mode: 'oddOneOut',
+        navigation.replace('OddOneOutResult', {
           score: finalScore,
           isNewBest: wasNew,
+          lastBoard,
         });
       } else {
         dispatch(continueAfterWrong());
@@ -122,11 +150,19 @@ export function OddOneOutScreen() {
               className="min-h-[44px] min-w-[44px] justify-center">
               <Text className="text-text-secondary">← Home</Text>
             </Pressable>
-            <View className="items-end">
-              <Text className="text-text-secondary">Score</Text>
-              <Text className="text-xl font-bold text-text-primary">
-                {odd.runScore}
-              </Text>
+            <View className="flex-row items-start gap-6">
+              <View className="items-end">
+                <Text className="text-text-secondary">Time</Text>
+                <Text className="text-xl font-bold text-text-primary tabular-nums">
+                  {formatElapsedSeconds(elapsedSeconds)}
+                </Text>
+              </View>
+              <View className="items-end">
+                <Text className="text-text-secondary">Score</Text>
+                <Text className="text-xl font-bold text-text-primary">
+                  {odd.runScore}
+                </Text>
+              </View>
             </View>
           </View>
 
@@ -162,6 +198,11 @@ export function OddOneOutScreen() {
               );
             })}
           </View>
+
+          <Text className="mt-6 max-w-[340px] self-center px-2 text-center text-base leading-6 text-text-secondary">
+            Tap the tile whose color is slightly different—the odd one out has a
+            different saturation than the rest.
+          </Text>
         </View>
       </SafeAreaView>
     </ErrorBoundary>

@@ -5,6 +5,14 @@ jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest'),
 );
 
+jest.mock('react-native-svg', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  const Svg = View;
+  const Mock = { Svg, Polygon: View, Circle: View, Rect: View, Path: View };
+  return { __esModule: true, default: Svg, ...Mock };
+});
+
 jest.mock('react-native-reanimated', () => {
   const { View, Pressable } = require('react-native');
   return {

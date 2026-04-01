@@ -18,6 +18,8 @@ export interface ColorTileProps {
   feedback: 'none' | 'pulse' | 'shake';
   onPress: (index: number) => void;
   disabled: boolean;
+  /** When set, draws a border (e.g. mark the correct odd tile on result screen). */
+  highlightBorder?: boolean;
 }
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -30,6 +32,7 @@ export function ColorTile({
   feedback,
   onPress,
   disabled,
+  highlightBorder,
 }: ColorTileProps) {
   const scale = useSharedValue(1);
   const translateX = useSharedValue(0);
@@ -70,7 +73,9 @@ export function ColorTile({
         scale.value = withSpring(1, { damping: 15 });
       }}
       style={[{ backgroundColor: bg }, animStyle]}
-      className="h-full w-full min-h-[44px] min-w-[44px] rounded-xl"
+      className={`h-full w-full min-h-[44px] min-w-[44px] rounded-xl ${
+        highlightBorder ? 'border-2 border-accent' : ''
+      }`}
     />
   );
 }

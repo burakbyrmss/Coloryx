@@ -2,7 +2,12 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import type { GameMode, HSB } from '@/types/hsb';
 import { randomOddOneOutBase, randomRememberTarget } from '@/utils/color';
-import { oddOneOutPointsForRound, rememberColorMatchScore } from '@/utils/scoring';
+import {
+  oddOneOutPointsForRound,
+  rememberColorMatchScore,
+  rememberRoundPoints,
+  REMEMBER_MAX_ROUNDS,
+} from '@/utils/scoring';
 
 export const INITIAL_SATURATION_DELTA = 25;
 export const SATURATION_DELTA_STEP = 1;
@@ -26,12 +31,22 @@ export interface OddOneOutGameState {
 
 export type RememberPhase = 'preview' | 'guess' | 'result';
 
+export interface RememberRoundRecord {
+  target: HSB;
+  guess: HSB;
+  points: number;
+}
+
 export interface RememberGameState {
   round: number;
+  /** Cumulative points this session (max REMEMBER_SESSION_MAX). */
   sessionScore: number;
+  /** Completed rounds only (length ≤ REMEMBER_MAX_ROUNDS). */
+  roundHistory: RememberRoundRecord[];
   target: HSB;
   guess: HSB;
   phase: RememberPhase;
+  /** Points earned this round (0–10), null before scoring. */
   lastResultScore: number | null;
 }
 
@@ -81,11 +96,13 @@ function buildOddRound(
 function buildRememberRound(
   round: number,
   sessionScore: number,
+  roundHistory: RememberRoundRecord[],
 ): RememberGameState {
   const target = randomRememberTarget();
   return {
     round,
     sessionScore,
+    roundHistory,
     target,
     guess: {
       h: Math.floor(Math.random() * 360),
@@ -155,12 +172,7 @@ export const gameSlice = createSlice({
         state.oddOneOut = null;
         state.activeMode = null;
       } else {
-        state.oddOneOut = buildOddRound(
-          g.round,
-          g.runScore,
-          g.lives,
-          g.saturationDelta,
-        );
+        g.feedback = 'none';
       }
     },
     endOddRun(state) {
@@ -170,7 +182,7 @@ export const gameSlice = createSlice({
     startRememberColor(state) {
       state.activeMode = 'rememberColor';
       state.oddOneOut = null;
-      state.remember = buildRememberRound(1, 0);
+      state.remember = buildRememberRound(1, 0, []);
     },
     setRememberPhase(state, action: PayloadAction<RememberPhase>) {
       if (state.remember) {
@@ -186,21 +198,35 @@ export const gameSlice = createSlice({
       if (!state.remember || state.remember.phase !== 'guess') {
         return;
       }
-      const { target, guess, sessionScore } = state.remember;
-      const lastResultScore = rememberColorMatchScore(target, guess);
+      const { target, guess, sessionScore, roundHistory } = state.remember;
+      const matchPercent = rememberColorMatchScore(target, guess);
+      const points = rememberRoundPoints(matchPercent);
+      const record: RememberRoundRecord = {
+        target: { ...target },
+        guess: { ...guess },
+        points,
+      };
       state.remember = {
         ...state.remember,
         phase: 'result',
-        lastResultScore,
-        sessionScore: sessionScore + lastResultScore,
+        lastResultScore: points,
+        sessionScore: sessionScore + points,
+        roundHistory: [...roundHistory, record],
       };
     },
     nextRememberRound(state) {
       if (!state.remember) {
         return;
       }
-      const { sessionScore } = state.remember;
-      state.remember = buildRememberRound(state.remember.round + 1, sessionScore);
+      if (state.remember.round >= REMEMBER_MAX_ROUNDS) {
+        return;
+      }
+      const { sessionScore, roundHistory } = state.remember;
+      state.remember = buildRememberRound(
+        state.remember.round + 1,
+        sessionScore,
+        roundHistory,
+      );
     },
     endRememberSession(state) {
       state.remember = null;

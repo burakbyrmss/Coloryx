@@ -4,7 +4,10 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { HomeScreen } from '@/features/home/screens/HomeScreen';
 import { OddOneOutScreen } from '@/features/oddOneOut/screens/OddOneOutScreen';
 import { RememberColorScreen } from '@/features/rememberColor/screens/RememberColorScreen';
-import { ResultScreen } from '@/features/result/screens/ResultScreen';
+import { RememberGuessScreen } from '@/features/rememberColor/screens/RememberGuessScreen';
+import { RememberRoundResultScreen } from '@/features/rememberColor/screens/RememberRoundResultScreen';
+import { OddOneOutResultScreen } from '@/features/result/screens/OddOneOutResultScreen';
+import { RememberColorResultScreen } from '@/features/result/screens/RememberColorResultScreen';
 import { SettingsScreen } from '@/features/settings/screens/SettingsScreen';
 import type { RootStackParamList } from '@/navigation/types';
 import themeColors from '@/theme/colors.json';
@@ -32,7 +35,24 @@ export function RootNavigator() {
           component={RememberColorScreen}
           options={{ gestureEnabled: false }}
         />
-        <Stack.Screen name="Result" component={ResultScreen} />
+        <Stack.Screen
+          name="RememberGuess"
+          component={RememberGuessScreen}
+          options={{ gestureEnabled: false }}
+        />
+        <Stack.Screen
+          name="RememberRoundResult"
+          component={RememberRoundResultScreen}
+          options={{ gestureEnabled: false }}
+        />
+        <Stack.Screen
+          name="RememberColorResult"
+          component={RememberColorResultScreen}
+        />
+        <Stack.Screen
+          name="OddOneOutResult"
+          component={OddOneOutResultScreen}
+        />
         <Stack.Screen name="Settings" component={SettingsScreen} />
       </Stack.Navigator>
     </NavigationContainer>

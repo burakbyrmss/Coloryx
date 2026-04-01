@@ -1,5 +1,16 @@
 import type { HSB } from '@/types/hsb';
 
+/** Remember Color session: exactly 5 rounds, 10 pts max per round, 50 total. */
+export const REMEMBER_MAX_ROUNDS = 5;
+export const REMEMBER_POINTS_PER_ROUND_MAX = 10;
+export const REMEMBER_SESSION_MAX = 50;
+
+/** Map match quality 0–100% to round points 0–10 (one decimal). */
+export function rememberRoundPoints(matchPercent0to100: number): number {
+  const raw = (matchPercent0to100 / 100) * REMEMBER_POINTS_PER_ROUND_MAX;
+  return Math.round(raw * 10) / 10;
+}
+
 /** Circular hue difference normalized to 0–1 (max error at 180°). */
 export function normalizedHueErrorDeg(h1: number, h2: number): number {
   const diff = Math.abs(h1 - h2);
