@@ -1,0 +1,19 @@
+{
+  "surface": {
+    "DEFAULT": "#0f0f12",
+    "card": "#1a1a21",
+    "elevated": "#24242e"
+  },
+  "accent": {
+    "DEFAULT": "#8b5cf6",
+    "muted": "#6d28d9"
+  },
+  "text": {
+    "primary": "#f4f4f5",
+    "secondary": "#a1a1aa",
+    "muted": "#71717a"
+  },
+  "slider": {
+    "trackMax": "#3f3f46"
+  }
+}
