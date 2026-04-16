@@ -9,8 +9,10 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
+import { QueryClientProvider } from '@tanstack/react-query';
 
 import { RootNavigator } from '@/navigation/RootNavigator';
+import { queryClient } from '@/services/reactQuery/queryClient';
 import { persistor, store } from '@/store/store';
 import themeColors from '@/theme/colors.json';
 
@@ -27,10 +29,12 @@ function App() {
     <GestureHandlerRootView className="flex-1">
       <Provider store={store}>
         <PersistGate loading={<PersistLoading />} persistor={persistor}>
-          <SafeAreaProvider>
-            <StatusBar barStyle="light-content" />
-            <RootNavigator />
-          </SafeAreaProvider>
+          <QueryClientProvider client={queryClient}>
+            <SafeAreaProvider>
+              <StatusBar barStyle="light-content" />
+              <RootNavigator />
+            </SafeAreaProvider>
+          </QueryClientProvider>
         </PersistGate>
       </Provider>
     </GestureHandlerRootView>
