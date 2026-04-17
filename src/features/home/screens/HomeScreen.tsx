@@ -1,14 +1,13 @@
-import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
-import { ActivityIndicator, Platform, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import type { RootStackParamList } from '@/navigation/types';
-import { useGetPing, usePostV1AuthDevice } from '@/services/api';
-import { setAuthTokens } from '@/services/auth/tokens';
-import { getOrCreateDeviceId } from '@/services/device/deviceId';
+import { useGetPing } from '@/services/api';
 import { useAppSelector } from '@/store/hooks';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'Home'>;
@@ -18,42 +17,26 @@ export function HomeScreen() {
   const bestOdd = useAppSelector(s => s.stats.bestOddOneOut);
   const bestRemember = useAppSelector(s => s.stats.bestRememberColor);
   const pingQuery = useGetPing({ query: { enabled: false } });
-  const registerDevice = usePostV1AuthDevice({
-    mutation: {
-      onSuccess: async res => {
-        await setAuthTokens({
-          accessToken: res.data.accessToken,
-          refreshToken: res.data.refreshToken,
-        });
-      },
-    },
-  });
-  const didRegisterRef = React.useRef(false);
 
-  React.useEffect(() => {
-    if (didRegisterRef.current) return;
-    didRegisterRef.current = true;
-
-    let cancelled = false;
-
-    (async () => {
-      const deviceId = await getOrCreateDeviceId();
-      if (cancelled) return;
-
-      registerDevice.mutate({
-        data: {
-          deviceId,
-          platform: Platform.OS,
-        },
+  useFocusEffect(
+    React.useCallback(() => {
+      (async () => {
+        const keys = await AsyncStorage.getAllKeys();
+        const entries = await Promise.all(
+          keys.map(async key => {
+            const value = await AsyncStorage.getItem(key);
+            return [key, value] as const;
+          }),
+        );
+        console.log(
+          '[HomeScreen] AsyncStorage (all keys)',
+          Object.fromEntries(entries),
+        );
+      })().catch(err => {
+        console.warn('[HomeScreen] AsyncStorage dump failed', err);
       });
-    })().catch(() => {
-      // Avoid blocking the home screen for background registration failures.
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [registerDevice]);
+    }, []),
+  );
 
   return (
     <ErrorBoundary>
