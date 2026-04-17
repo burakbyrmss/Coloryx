@@ -15,10 +15,12 @@ import { gameSlice } from '@/store/slices/gameSlice';
 import { settingsSlice } from '@/store/slices/settingsSlice';
 import { statsSlice } from '@/store/slices/statsSlice';
 
-const statsPersistConfig = {
-  key: 'coloryx_stats',
-  storage: AsyncStorage,
-};
+void Promise.all([
+  AsyncStorage.removeItem('coloryx_stats'),
+  AsyncStorage.removeItem('persist:coloryx_stats'),
+]).catch((error: unknown) => {
+  console.warn('[store] failed to remove coloryx_stats from storage', error);
+});
 
 const settingsPersistConfig = {
   key: 'coloryx_settings',
@@ -27,7 +29,7 @@ const settingsPersistConfig = {
 
 const rootReducer = combineReducers({
   game: gameSlice.reducer,
-  stats: persistReducer(statsPersistConfig, statsSlice.reducer),
+  stats: statsSlice.reducer,
   settings: persistReducer(settingsPersistConfig, settingsSlice.reducer),
 });
 

@@ -4,9 +4,11 @@
  * Coloryx API
  * OpenAPI spec version: v1
  */
+import type { GetV1Me200Name } from './getV1Me200Name';
 
 export type GetV1Me200 = {
   id: string;
+  name: GetV1Me200Name;
   createdAt: string;
   updatedAt: string;
 };

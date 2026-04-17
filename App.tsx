@@ -13,9 +13,22 @@ import { QueryClientProvider } from '@tanstack/react-query';
 
 import { DeviceRegistrationBootstrap } from '@/components/DeviceRegistrationBootstrap';
 import { RootNavigator } from '@/navigation/RootNavigator';
+import { getV1Me } from '@/services/api';
+import { ensureDeviceBootstrap } from '@/services/auth/deviceBootstrap';
 import { queryClient } from '@/services/reactQuery/queryClient';
 import { persistor, store } from '@/store/store';
 import themeColors from '@/theme/colors.json';
+
+const USER_NAME_MIN_LENGTH = 2;
+const USER_NAME_MAX_LENGTH = 16;
+
+function hasValidMeName(name: string | null | undefined): boolean {
+  const trimmed = (name ?? '').trim();
+  return (
+    trimmed.length >= USER_NAME_MIN_LENGTH &&
+    trimmed.length <= USER_NAME_MAX_LENGTH
+  );
+}
 
 function PersistLoading() {
   return (
@@ -26,6 +39,41 @@ function PersistLoading() {
 }
 
 function App() {
+  const [initialRouteName, setInitialRouteName] = React.useState<
+    'NameSetup' | 'Home' | null
+  >(null);
+
+  React.useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      await ensureDeviceBootstrap().catch(() => {
+        // Non-blocking: /v1/me may still work after retry from DeviceRegistrationBootstrap.
+      });
+      if (cancelled) {
+        return;
+      }
+
+      try {
+        const res = await getV1Me();
+        if (cancelled) {
+          return;
+        }
+        setInitialRouteName(
+          hasValidMeName(res.data.name) ? 'Home' : 'NameSetup',
+        );
+      } catch {
+        if (!cancelled) {
+          setInitialRouteName('NameSetup');
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <GestureHandlerRootView className="flex-1">
       <Provider store={store}>
@@ -34,7 +82,11 @@ function App() {
             <SafeAreaProvider>
               <DeviceRegistrationBootstrap />
               <StatusBar barStyle="light-content" />
-              <RootNavigator />
+              {initialRouteName ? (
+                <RootNavigator initialRouteName={initialRouteName} />
+              ) : (
+                <PersistLoading />
+              )}
             </SafeAreaProvider>
           </QueryClientProvider>
         </PersistGate>

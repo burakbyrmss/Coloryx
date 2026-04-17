@@ -10,7 +10,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { DiagonalSplitSquare } from '@/components/DiagonalSplitSquare';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { t } from '@/i18n';
 import type { RootStackParamList } from '@/navigation/types';
+import { usePostV1Scores } from '@/services/api';
 import { REMEMBER_SESSION_MAX } from '@/utils/scoring';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'RememberColorResult'>;
@@ -24,6 +26,8 @@ export function RememberColorResultScreen() {
   const navigation = useNavigation<Nav>();
   const { score, isNewBest, rememberRoundHistory, rememberSessionMax } =
     useRoute<R>().params;
+  const { mutateAsync: submitScore } = usePostV1Scores();
+  const didSubmitRef = React.useRef(false);
 
   const sessionCap = rememberSessionMax ?? REMEMBER_SESSION_MAX;
   const showNewBest = Boolean(isNewBest);
@@ -37,6 +41,22 @@ export function RememberColorResultScreen() {
     Math.floor((windowWidth - horizontalPad - gap * 4) / 5),
   );
 
+  React.useEffect(() => {
+    if (didSubmitRef.current) {
+      return;
+    }
+    didSubmitRef.current = true;
+
+    void submitScore({
+      data: {
+        mode: 'REMEMBER_COLOR',
+        score,
+      },
+    }).catch(error => {
+      console.warn('[RememberColorResultScreen] score submit failed', error);
+    });
+  }, [score, submitScore]);
+
   return (
     <ErrorBoundary>
       <SafeAreaView className="flex-1 bg-black">
@@ -44,7 +64,7 @@ export function RememberColorResultScreen() {
           <View className="flex-row justify-end">
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel="Close"
+              accessibilityLabel={t('close')}
               onPress={() => navigation.replace('Home')}
               className="h-10 w-10 items-center justify-center rounded-full bg-white/10">
               <Text className="text-lg text-white">✕</Text>
@@ -53,7 +73,7 @@ export function RememberColorResultScreen() {
 
           <View className="items-center pt-2">
             <Text className="text-xs font-semibold uppercase tracking-widest text-neutral-500">
-              Results
+              {t('results')}
             </Text>
             <View className="mt-2 flex-row items-baseline">
               <Text className="text-6xl font-bold text-white">
@@ -64,7 +84,7 @@ export function RememberColorResultScreen() {
               </Text>
             </View>
             <Text className="mt-4 max-w-[320px] text-center text-base leading-6 text-white">
-              Your eyes know things your hands don&apos;t.
+              {t('rememberQuote')}
             </Text>
           </View>
 
@@ -98,7 +118,7 @@ export function RememberColorResultScreen() {
           {showNewBest ? (
             <View className="mt-8 rounded-2xl bg-neutral-900 py-4">
               <Text className="text-center text-base font-bold uppercase tracking-wide text-emerald-400">
-                New personal best!
+                {t('newPersonalBest')}
               </Text>
             </View>
           ) : null}
@@ -106,10 +126,12 @@ export function RememberColorResultScreen() {
           <View className="mt-auto pt-6">
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel="Play again"
+              accessibilityLabel={t('playAgain')}
               onPress={() => navigation.replace('Home')}
               className="min-h-[56px] items-center justify-center rounded-full bg-home-remember-bright py-4">
-              <Text className="text-lg font-semibold text-black">Play Again</Text>
+              <Text className="text-lg font-semibold text-black">
+                {t('playAgain')}
+              </Text>
             </Pressable>
           </View>
         </View>

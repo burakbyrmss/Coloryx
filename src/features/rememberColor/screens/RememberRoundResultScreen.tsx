@@ -5,6 +5,7 @@ import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { t } from '@/i18n';
 import {
   rememberCardElevated,
   RememberSessionHeader,
@@ -125,7 +126,7 @@ export function RememberRoundResultScreen() {
                     </Text>
                   </View>
                   <View className="bg-black/35 px-4 py-3">
-                    <Text className="text-sm text-white/80">Original</Text>
+                    <Text className="text-sm text-white/80">{t('original')}</Text>
                     <Text className="mt-0.5 text-lg font-bold text-white">
                       {formatHsbLine(remember.target)}
                     </Text>
@@ -147,7 +148,7 @@ export function RememberRoundResultScreen() {
                       {formatRememberPoints(remember.lastResultScore)}
                     </Text>
                     <Text className="mt-0.5 text-right text-xs text-white/80">
-                      pts this round
+                      {t('pointsThisRound')}
                     </Text>
                     <Text className="mt-0.5 text-right text-sm text-white/90">
                       {rememberMatchTierLabel(remember.lastResultScore)}
@@ -156,7 +157,7 @@ export function RememberRoundResultScreen() {
                   <View className="flex-row items-end justify-between bg-black/35 px-4 py-3 pr-20">
                     <View className="min-w-0 flex-1">
                       <Text className="text-sm text-white/80">
-                        Your selection
+                        {t('yourSelection')}
                       </Text>
                       <Text className="mt-0.5 text-lg font-bold text-white">
                         {formatHsbLine(remember.guess)}
@@ -168,8 +169,8 @@ export function RememberRoundResultScreen() {
                       accessibilityRole="button"
                       accessibilityLabel={
                         remember.round >= REMEMBER_MAX_ROUNDS
-                          ? 'View results'
-                          : 'Next round'
+                          ? t('viewResults')
+                          : t('nextRound')
                       }
                       onPress={() => {
                         if (remember.round >= REMEMBER_MAX_ROUNDS) {
@@ -189,7 +190,7 @@ export function RememberRoundResultScreen() {
             </View>
 
             <Text className="mt-3 text-center text-xs text-text-muted">
-              Δ Hue ~{deltaH}° · Δ S {deltaS} · Δ B {deltaB}
+              {t('deltaSummary', { h: deltaH, s: deltaS, b: deltaB })}
             </Text>
           </View>
         </View>

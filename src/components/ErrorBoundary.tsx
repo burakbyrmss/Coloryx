@@ -1,6 +1,8 @@
 import React, { type ErrorInfo, type ReactNode } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
+import { t } from '@/i18n';
+
 interface ErrorBoundaryProps {
   children: ReactNode;
 }
@@ -21,7 +23,7 @@ export class ErrorBoundary extends React.Component<
 
   static getDerivedStateFromError(error: unknown): ErrorBoundaryState {
     const message =
-      error instanceof Error ? error.message : 'Something went wrong.';
+      error instanceof Error ? error.message : t('somethingWentWrong');
     return { hasError: true, message };
   }
 
@@ -40,17 +42,17 @@ export class ErrorBoundary extends React.Component<
       return (
         <View className="flex-1 items-center justify-center bg-surface px-6">
           <Text className="mb-2 text-center text-lg font-semibold text-text-primary">
-            Something went wrong
+            {t('somethingWentWrong')}
           </Text>
           <Text className="mb-6 text-center text-text-secondary">
             {this.state.message}
           </Text>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Try again"
+            accessibilityLabel={t('tryAgain')}
             onPress={this.handleReset}
             className="min-h-[44px] min-w-[44px] items-center justify-center rounded-xl bg-accent px-6">
-            <Text className="font-semibold text-white">Try again</Text>
+            <Text className="font-semibold text-white">{t('tryAgain')}</Text>
           </Pressable>
         </View>
       );

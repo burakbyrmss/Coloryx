@@ -1,7 +1,9 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import { LeaderboardsScreen } from '@/features/leaderboards/screens/LeaderboardsScreen';
 import { HomeScreen } from '@/features/home/screens/HomeScreen';
+import { NameSetupScreen } from '@/features/onboarding/screens/NameSetupScreen';
 import { OddOneOutScreen } from '@/features/oddOneOut/screens/OddOneOutScreen';
 import { RememberColorScreen } from '@/features/rememberColor/screens/RememberColorScreen';
 import { RememberGuessScreen } from '@/features/rememberColor/screens/RememberGuessScreen';
@@ -14,17 +16,23 @@ import themeColors from '@/theme/colors.json';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-export function RootNavigator() {
+type RootNavigatorProps = {
+  initialRouteName: keyof RootStackParamList;
+};
+
+export function RootNavigator({ initialRouteName }: RootNavigatorProps) {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Home"
+        initialRouteName={initialRouteName}
         screenOptions={{
           headerShown: false,
           animation: 'fade',
           contentStyle: { backgroundColor: themeColors.surface.DEFAULT },
         }}>
+        <Stack.Screen name="NameSetup" component={NameSetupScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Leaderboards" component={LeaderboardsScreen} />
         <Stack.Screen
           name="OddOneOut"
           component={OddOneOutScreen}

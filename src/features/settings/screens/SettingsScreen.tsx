@@ -5,6 +5,7 @@ import { Pressable, Switch, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { t } from '@/i18n';
 import type { RootStackParamList } from '@/navigation/types';
 import { resetSettings, setHapticsEnabled, setSoundEnabled } from '@/store/slices/settingsSlice';
 import { resetStats } from '@/store/slices/statsSlice';
@@ -24,25 +25,23 @@ export function SettingsScreen() {
         <View className="flex-1 px-6 pt-4">
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Go back"
+            accessibilityLabel={t('goBack')}
             onPress={() => navigation.goBack()}
             className="mb-8 min-h-[44px] self-start justify-center">
-            <Text className="text-accent">← Back</Text>
+            <Text className="text-accent">← {t('back')}</Text>
           </Pressable>
 
           <Text className="mb-2 text-2xl font-bold text-text-primary">
-            Settings
+            {t('settings')}
           </Text>
           <Text className="mb-8 text-sm text-text-secondary">
-            Coloryx depends on color perception. If you have difficulty
-            distinguishing subtle differences, try a brighter screen or take
-            breaks.
+            {t('settingsInfo')}
           </Text>
 
           <View className="mb-4 flex-row items-center justify-between rounded-xl bg-surface-card px-4 py-3">
-            <Text className="text-text-primary">Sound</Text>
+            <Text className="text-text-primary">{t('sound')}</Text>
             <Switch
-              accessibilityLabel="Toggle sound"
+              accessibilityLabel={t('toggleSound')}
               value={soundEnabled}
               onValueChange={v => {
                 dispatch(setSoundEnabled(v));
@@ -51,9 +50,9 @@ export function SettingsScreen() {
           </View>
 
           <View className="mb-8 flex-row items-center justify-between rounded-xl bg-surface-card px-4 py-3">
-            <Text className="text-text-primary">Haptics</Text>
+            <Text className="text-text-primary">{t('haptics')}</Text>
             <Switch
-              accessibilityLabel="Toggle haptics"
+              accessibilityLabel={t('toggleHaptics')}
               value={hapticsEnabled}
               onValueChange={v => {
                 dispatch(setHapticsEnabled(v));
@@ -63,13 +62,15 @@ export function SettingsScreen() {
 
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Reset local progress"
+            accessibilityLabel={t('resetLocalProgress')}
             onPress={() => {
               dispatch(resetStats());
               dispatch(resetSettings());
             }}
             className="min-h-[48px] items-center justify-center rounded-xl border border-red-500/40 py-3">
-            <Text className="font-medium text-red-400">Reset local progress</Text>
+            <Text className="font-medium text-red-400">
+              {t('resetLocalProgress')}
+            </Text>
           </Pressable>
         </View>
       </SafeAreaView>

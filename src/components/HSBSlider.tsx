@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { PanResponder, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
+import { t } from '@/i18n';
 import themeColors from '@/theme/colors.json';
 import type { HSB } from '@/types/hsb';
 import { HUE_SPECTRUM_GRADIENT_COLORS, hsbToRgbString } from '@/utils/color';
@@ -151,7 +152,7 @@ export function HSBSlider({
   return (
     <View className="w-full shrink-0 flex-col">
       <HorizontalStrip
-        accessibilityLabel="Hue"
+        accessibilityLabel={t('hue')}
         kind="h"
         hsb={value}
         onChange={onChange}
@@ -159,7 +160,7 @@ export function HSBSlider({
         onInteractionStart={() => onActiveStripChange?.('h')}
       />
       <HorizontalStrip
-        accessibilityLabel="Saturation"
+        accessibilityLabel={t('saturation')}
         kind="s"
         hsb={value}
         onChange={onChange}
@@ -167,7 +168,7 @@ export function HSBSlider({
         onInteractionStart={() => onActiveStripChange?.('s')}
       />
       <HorizontalStrip
-        accessibilityLabel="Brightness"
+        accessibilityLabel={t('brightness')}
         kind="b"
         hsb={value}
         onChange={onChange}

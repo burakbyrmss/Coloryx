@@ -10,7 +10,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ColorTile } from '@/components/ColorTile';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { t } from '@/i18n';
 import type { RootStackParamList } from '@/navigation/types';
+import { usePostV1Scores } from '@/services/api';
 import { useAppSelector } from '@/store/hooks';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'OddOneOutResult'>;
@@ -21,6 +23,24 @@ export function OddOneOutResultScreen() {
   const { score, isNewBest, lastBoard } = useRoute<R>().params;
   const bestOdd = useAppSelector(s => s.stats.bestOddOneOut);
   const showNewBest = Boolean(isNewBest);
+  const { mutateAsync: submitScore } = usePostV1Scores();
+  const didSubmitRef = React.useRef(false);
+
+  React.useEffect(() => {
+    if (didSubmitRef.current) {
+      return;
+    }
+    didSubmitRef.current = true;
+
+    void submitScore({
+      data: {
+        mode: 'ODD_ONE_OUT',
+        score,
+      },
+    }).catch(error => {
+      console.warn('[OddOneOutResultScreen] score submit failed', error);
+    });
+  }, [score, submitScore]);
 
   return (
     <ErrorBoundary>
@@ -31,22 +51,22 @@ export function OddOneOutResultScreen() {
           keyboardShouldPersistTaps="handled">
           <View className="items-center pt-4">
             <Text className="mb-2 text-2xl font-bold text-text-primary">
-              Run over
+              {t('runOver')}
             </Text>
             <Text className="mb-6 text-5xl font-bold text-accent">{score}</Text>
             {showNewBest && (
               <Text className="mb-4 text-center text-lg font-semibold text-text-primary">
-                New best for this mode
+                {t('newBestMode')}
               </Text>
             )}
             <Text className="text-text-muted">
-              Best (Odd one out): {bestOdd}
+              {t('bestOddOneOut', { score: bestOdd })}
             </Text>
 
             {lastBoard ? (
               <View className="mt-8 w-full max-w-[340px]">
                 <Text className="mb-3 text-center text-sm font-medium text-text-secondary">
-                  Your last round — outlined tile was the odd one out
+                  {t('lastRoundOddTile')}
                 </Text>
                 <View className="mx-auto aspect-square w-full flex-row flex-wrap">
                   {Array.from({ length: 9 }, (_, i) => {
@@ -77,10 +97,12 @@ export function OddOneOutResultScreen() {
           <View className="mt-8 pb-2 pt-6">
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel="Play again"
+              accessibilityLabel={t('playAgain')}
               onPress={() => navigation.replace('Home')}
               className="min-h-[56px] items-center justify-center rounded-full bg-home-odd-bright py-4">
-              <Text className="text-lg font-semibold text-black">Play Again</Text>
+              <Text className="text-lg font-semibold text-black">
+                {t('playAgain')}
+              </Text>
             </Pressable>
           </View>
         </ScrollView>

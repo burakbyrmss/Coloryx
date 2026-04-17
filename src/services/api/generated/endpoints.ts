@@ -28,6 +28,8 @@ import type {
   GetV1LeaderboardsParams,
   GetV1Me200,
   GetV1SavesLatest200,
+  GetV1ScoresBestMe200,
+  GetV1ScoresBestMeParams,
   GetV1ScoresMe200,
   GetV1ScoresMeParams,
   PostV1AuthDevice200,
@@ -38,6 +40,8 @@ import type {
   PostV1AuthRefreshBody,
   PostV1Scores200,
   PostV1ScoresBody,
+  PutV1MeName200,
+  PutV1MeNameBody,
   PutV1Saves200,
   PutV1Saves409,
   PutV1SavesBody,
@@ -581,6 +585,104 @@ export const useDeleteV1Me = <TError = unknown, TContext = unknown>(
 };
 
 /**
+ * @summary Save current user name
+ */
+export type putV1MeNameResponse200 = {
+  data: PutV1MeName200;
+  status: 200;
+};
+
+export type putV1MeNameResponseSuccess = putV1MeNameResponse200 & {
+  headers: Headers;
+};
+export type putV1MeNameResponse = putV1MeNameResponseSuccess;
+
+export const getPutV1MeNameUrl = () => {
+  return `/v1/me/name`;
+};
+
+export const putV1MeName = async (
+  putV1MeNameBody: PutV1MeNameBody,
+  options?: RequestInit,
+): Promise<putV1MeNameResponse> => {
+  return orvalFetch<putV1MeNameResponse>(getPutV1MeNameUrl(), {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(putV1MeNameBody),
+  });
+};
+
+export const getPutV1MeNameMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putV1MeName>>,
+    TError,
+    { data: PutV1MeNameBody },
+    TContext
+  >;
+  request?: SecondParameter<typeof orvalFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putV1MeName>>,
+  TError,
+  { data: PutV1MeNameBody },
+  TContext
+> => {
+  const mutationKey = ['putV1MeName'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putV1MeName>>,
+    { data: PutV1MeNameBody }
+  > = props => {
+    const { data } = props ?? {};
+
+    return putV1MeName(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PutV1MeNameMutationResult = NonNullable<
+  Awaited<ReturnType<typeof putV1MeName>>
+>;
+export type PutV1MeNameMutationBody = PutV1MeNameBody;
+export type PutV1MeNameMutationError = unknown;
+
+/**
+ * @summary Save current user name
+ */
+export const usePutV1MeName = <TError = unknown, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof putV1MeName>>,
+      TError,
+      { data: PutV1MeNameBody },
+      TContext
+    >;
+    request?: SecondParameter<typeof orvalFetch>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof putV1MeName>>,
+  TError,
+  { data: PutV1MeNameBody },
+  TContext
+> => {
+  const mutationOptions = getPutV1MeNameMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+
+/**
  * @summary Submit a score run
  */
 export type postV1ScoresResponse200 = {
@@ -834,6 +936,199 @@ export function useGetV1ScoresMe<
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
   const queryOptions = getGetV1ScoresMeQueryOptions(params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+/**
+ * @summary Get my best score for a mode
+ */
+export type getV1ScoresBestMeResponse200 = {
+  data: GetV1ScoresBestMe200;
+  status: 200;
+};
+
+export type getV1ScoresBestMeResponseSuccess = getV1ScoresBestMeResponse200 & {
+  headers: Headers;
+};
+export type getV1ScoresBestMeResponse = getV1ScoresBestMeResponseSuccess;
+
+export const getGetV1ScoresBestMeUrl = (params: GetV1ScoresBestMeParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/v1/scores/best/me?${stringifiedParams}`
+    : `/v1/scores/best/me`;
+};
+
+export const getV1ScoresBestMe = async (
+  params: GetV1ScoresBestMeParams,
+  options?: RequestInit,
+): Promise<getV1ScoresBestMeResponse> => {
+  return orvalFetch<getV1ScoresBestMeResponse>(
+    getGetV1ScoresBestMeUrl(params),
+    {
+      ...options,
+      method: 'GET',
+    },
+  );
+};
+
+export const getGetV1ScoresBestMeQueryKey = (
+  params?: GetV1ScoresBestMeParams,
+) => {
+  return [`/v1/scores/best/me`, ...(params ? [params] : [])] as const;
+};
+
+export const getGetV1ScoresBestMeQueryOptions = <
+  TData = Awaited<ReturnType<typeof getV1ScoresBestMe>>,
+  TError = unknown,
+>(
+  params: GetV1ScoresBestMeParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getV1ScoresBestMe>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof orvalFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetV1ScoresBestMeQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getV1ScoresBestMe>>
+  > = ({ signal }) => getV1ScoresBestMe(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getV1ScoresBestMe>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetV1ScoresBestMeQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getV1ScoresBestMe>>
+>;
+export type GetV1ScoresBestMeQueryError = unknown;
+
+export function useGetV1ScoresBestMe<
+  TData = Awaited<ReturnType<typeof getV1ScoresBestMe>>,
+  TError = unknown,
+>(
+  params: GetV1ScoresBestMeParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getV1ScoresBestMe>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getV1ScoresBestMe>>,
+          TError,
+          Awaited<ReturnType<typeof getV1ScoresBestMe>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof orvalFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetV1ScoresBestMe<
+  TData = Awaited<ReturnType<typeof getV1ScoresBestMe>>,
+  TError = unknown,
+>(
+  params: GetV1ScoresBestMeParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getV1ScoresBestMe>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getV1ScoresBestMe>>,
+          TError,
+          Awaited<ReturnType<typeof getV1ScoresBestMe>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof orvalFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetV1ScoresBestMe<
+  TData = Awaited<ReturnType<typeof getV1ScoresBestMe>>,
+  TError = unknown,
+>(
+  params: GetV1ScoresBestMeParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getV1ScoresBestMe>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof orvalFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Get my best score for a mode
+ */
+
+export function useGetV1ScoresBestMe<
+  TData = Awaited<ReturnType<typeof getV1ScoresBestMe>>,
+  TError = unknown,
+>(
+  params: GetV1ScoresBestMeParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getV1ScoresBestMe>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof orvalFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetV1ScoresBestMeQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,

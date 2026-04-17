@@ -1,7 +1,9 @@
 import type { RememberRoundRecord } from '@/store/slices/gameSlice';
 
 export type RootStackParamList = {
+  NameSetup: undefined;
   Home: undefined;
+  Leaderboards: undefined;
   OddOneOut: undefined;
   RememberColor: undefined;
   RememberGuess: undefined;

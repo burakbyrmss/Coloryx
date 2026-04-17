@@ -5,6 +5,7 @@ import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { t } from '@/i18n';
 import {
   CountdownDigits,
   rememberCardElevated,
@@ -118,7 +119,7 @@ export function RememberColorScreen() {
                 />
                 <Text
                   className={`mt-1 text-right text-sm ${previewMetaCls} opacity-90`}>
-                  Seconds to remember
+                  {t('secondsToRemember')}
                 </Text>
               </View>
             </View>

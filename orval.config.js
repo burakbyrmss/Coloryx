@@ -1,11 +1,11 @@
 /**
  * Orval config: generates type-safe endpoint functions from OpenAPI.
- * Spec is served locally from `http://localhost:3000/docs/json` (OpenAPI 3.0.3).
+ * Spec is served locally from `http://coloryx-test.utilizing.work/docs/json` (OpenAPI 3.0.3).
  */
 module.exports = {
   coloryx: {
     input: {
-      target: 'http://localhost:3000/docs/json',
+      target: 'https://coloryx-test.utilizing.work/docs/json',
       validation: false,
     },
     output: {

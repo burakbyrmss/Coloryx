@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ColorTile } from '@/components/ColorTile';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { t } from '@/i18n';
 import type { RootStackParamList } from '@/navigation/types';
 import {
   advanceOddAfterCorrect,
@@ -142,23 +143,23 @@ export function OddOneOutScreen() {
           <View className="mb-4 flex-row items-center justify-between">
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel="Leave game"
+              accessibilityLabel={t('leaveGame')}
               onPress={() => {
                 dispatch(exitToMenu());
                 navigation.navigate('Home');
               }}
               className="min-h-[44px] min-w-[44px] justify-center">
-              <Text className="text-text-secondary">← Home</Text>
+              <Text className="text-text-secondary">← {t('home')}</Text>
             </Pressable>
             <View className="flex-row items-start gap-6">
               <View className="items-end">
-                <Text className="text-text-secondary">Time</Text>
+                <Text className="text-text-secondary">{t('time')}</Text>
                 <Text className="text-xl font-bold text-text-primary tabular-nums">
                   {formatElapsedSeconds(elapsedSeconds)}
                 </Text>
               </View>
               <View className="items-end">
-                <Text className="text-text-secondary">Score</Text>
+                <Text className="text-text-secondary">{t('score')}</Text>
                 <Text className="text-xl font-bold text-text-primary">
                   {odd.runScore}
                 </Text>
@@ -176,7 +177,7 @@ export function OddOneOutScreen() {
           </View>
 
           <Text className="mb-4 text-center text-text-muted">
-            Round {odd.round}
+            {t('round', { round: odd.round })}
           </Text>
 
           <View className="mx-auto aspect-square w-full max-w-[340px] flex-row flex-wrap">
@@ -200,8 +201,7 @@ export function OddOneOutScreen() {
           </View>
 
           <Text className="mt-6 max-w-[340px] self-center px-2 text-center text-base leading-6 text-text-secondary">
-            Tap the tile whose color is slightly different—the odd one out has a
-            different saturation than the rest.
+            {t('oddOneOutInstructions')}
           </Text>
         </View>
       </SafeAreaView>

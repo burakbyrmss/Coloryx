@@ -2,6 +2,7 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { HSBStripKind } from '@/components/HSBSlider';
+import { t } from '@/i18n';
 import type { HSB } from '@/types/hsb';
 import { REMEMBER_MAX_ROUNDS } from '@/utils/scoring';
 
@@ -36,15 +37,15 @@ export function prefersDarkTextOnHsb(hsb: HSB): boolean {
 
 export function rememberMatchTierLabel(points: number): string {
   if (points >= 9) {
-    return 'Excellent';
+    return t('excellent');
   }
   if (points >= 7.5) {
-    return 'Great';
+    return t('great');
   }
   if (points >= 5) {
-    return 'Good';
+    return t('good');
   }
-  return 'Keep practicing';
+  return t('keepPracticing');
 }
 
 export function formatRememberPoints(p: number): string {
@@ -53,13 +54,13 @@ export function formatRememberPoints(p: number): string {
 
 export function stripControlLabel(k: HSBStripKind | null): string {
   if (k === 'h') {
-    return 'Hue';
+    return t('hue');
   }
   if (k === 's') {
-    return 'Saturation';
+    return t('saturation');
   }
   if (k === 'b') {
-    return 'Brightness';
+    return t('brightness');
   }
   return '';
 }
@@ -90,10 +91,10 @@ export function RememberSessionHeader({ onLeave }: { onLeave: () => void }) {
     <View className="mb-4">
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel="Leave game"
+        accessibilityLabel={t('leaveGame')}
         onPress={onLeave}
         className="min-h-[44px] min-w-[44px] justify-center">
-        <Text className="text-text-secondary">← Home</Text>
+        <Text className="text-text-secondary">← {t('home')}</Text>
       </Pressable>
     </View>
   );

@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { HSBSlider, type HSBStripKind } from '@/components/HSBSlider';
+import { t } from '@/i18n';
 import {
   rememberCardElevated,
   RememberSessionHeader,
@@ -105,7 +106,7 @@ export function RememberGuessScreen() {
                   </View>
                   <Pressable
                     accessibilityRole="button"
-                    accessibilityLabel="Submit guess"
+                    accessibilityLabel={t('submitGuess')}
                     onPress={() => {
                       dispatch(submitRememberGuess());
                       navigation.replace('RememberRoundResult');

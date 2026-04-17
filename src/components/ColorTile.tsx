@@ -8,6 +8,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
+import { t } from '@/i18n';
 import { hsbToRgbString } from '@/utils/color';
 
 export interface ColorTileProps {
@@ -63,7 +64,7 @@ export function ColorTile({
   return (
     <AnimatedPressable
       accessibilityRole="button"
-      accessibilityLabel={`Color tile ${index + 1}`}
+      accessibilityLabel={t('colorTile', { index: index + 1 })}
       disabled={disabled}
       onPress={() => onPress(index)}
       onPressIn={() => {
