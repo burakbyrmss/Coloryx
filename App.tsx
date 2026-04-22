@@ -9,9 +9,14 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
-import { QueryClientProvider } from '@tanstack/react-query';
+import {
+  QueryClientProvider,
+  useIsFetching,
+  useIsMutating,
+} from '@tanstack/react-query';
 
 import { DeviceRegistrationBootstrap } from '@/components/DeviceRegistrationBootstrap';
+import { FullscreenActivityOverlay } from '@/components/FullscreenActivityOverlay';
 import { RootNavigator } from '@/navigation/RootNavigator';
 import { getV1Me } from '@/services/api';
 import { ensureDeviceBootstrap } from '@/services/auth/deviceBootstrap';
@@ -38,10 +43,13 @@ function PersistLoading() {
   );
 }
 
-function App() {
+function AppContent() {
   const [initialRouteName, setInitialRouteName] = React.useState<
     'NameSetup' | 'Home' | null
   >(null);
+  const activeFetches = useIsFetching();
+  const activeMutations = useIsMutating();
+  const isGlobalLoading = activeFetches > 0 || activeMutations > 0;
 
   React.useEffect(() => {
     let cancelled = false;
@@ -75,19 +83,28 @@ function App() {
   }, []);
 
   return (
+    <SafeAreaProvider>
+      <View className="relative flex-1">
+        <DeviceRegistrationBootstrap />
+        <StatusBar barStyle="light-content" />
+        {initialRouteName ? (
+          <RootNavigator initialRouteName={initialRouteName} />
+        ) : (
+          <PersistLoading />
+        )}
+        <FullscreenActivityOverlay visible={isGlobalLoading} />
+      </View>
+    </SafeAreaProvider>
+  );
+}
+
+function App() {
+  return (
     <GestureHandlerRootView className="flex-1">
       <Provider store={store}>
         <PersistGate loading={<PersistLoading />} persistor={persistor}>
           <QueryClientProvider client={queryClient}>
-            <SafeAreaProvider>
-              <DeviceRegistrationBootstrap />
-              <StatusBar barStyle="light-content" />
-              {initialRouteName ? (
-                <RootNavigator initialRouteName={initialRouteName} />
-              ) : (
-                <PersistLoading />
-              )}
-            </SafeAreaProvider>
+            <AppContent />
           </QueryClientProvider>
         </PersistGate>
       </Provider>
