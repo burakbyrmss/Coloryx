@@ -10,5 +10,6 @@ import type { GetV1LeaderboardsMe200BestScore } from './getV1LeaderboardsMe200Be
 export type GetV1LeaderboardsMe200 = {
   mode: (typeof GetV1LeaderboardsMe200Mode)[keyof typeof GetV1LeaderboardsMe200Mode];
   userId: string;
+  name: string;
   bestScore: GetV1LeaderboardsMe200BestScore;
 };

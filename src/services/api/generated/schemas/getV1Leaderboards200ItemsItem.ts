@@ -7,6 +7,7 @@
 
 export type GetV1Leaderboards200ItemsItem = {
   userId: string;
+  name: string;
   bestScore: number;
   updatedAt: string;
 };

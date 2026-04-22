@@ -94,7 +94,7 @@ export function RememberSessionHeader({ onLeave }: { onLeave: () => void }) {
         accessibilityLabel={t('leaveGame')}
         onPress={onLeave}
         className="min-h-[44px] min-w-[44px] justify-center">
-        <Text className="text-text-secondary">← {t('home')}</Text>
+        <Text className="text-text-primary">← {t('home')}</Text>
       </Pressable>
     </View>
   );

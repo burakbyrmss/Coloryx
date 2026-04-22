@@ -149,7 +149,7 @@ export function OddOneOutScreen() {
                 navigation.navigate('Home');
               }}
               className="min-h-[44px] min-w-[44px] justify-center">
-              <Text className="text-text-secondary">← {t('home')}</Text>
+              <Text className="text-text-primary">← {t('home')}</Text>
             </Pressable>
             <View className="flex-row items-start gap-6">
               <View className="items-end">

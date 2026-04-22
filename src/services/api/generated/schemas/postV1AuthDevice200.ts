@@ -4,9 +4,11 @@
  * Coloryx API
  * OpenAPI spec version: v1
  */
+import type { PostV1AuthDevice200Name } from './postV1AuthDevice200Name';
 
 export type PostV1AuthDevice200 = {
   userId: string;
+  name: PostV1AuthDevice200Name;
   deviceId: string;
   accessToken: string;
   refreshToken: string;

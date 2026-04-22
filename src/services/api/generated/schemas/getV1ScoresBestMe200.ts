@@ -5,10 +5,12 @@
  * OpenAPI spec version: v1
  */
 import type { GetV1ScoresBestMe200Mode } from './getV1ScoresBestMe200Mode';
+import type { GetV1ScoresBestMe200Name } from './getV1ScoresBestMe200Name';
 import type { GetV1ScoresBestMe200BestScore } from './getV1ScoresBestMe200BestScore';
 
 export type GetV1ScoresBestMe200 = {
   mode: (typeof GetV1ScoresBestMe200Mode)[keyof typeof GetV1ScoresBestMe200Mode];
   userId: string;
+  name: GetV1ScoresBestMe200Name;
   bestScore: GetV1ScoresBestMe200BestScore;
 };

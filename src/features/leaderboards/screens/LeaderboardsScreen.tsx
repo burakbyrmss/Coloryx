@@ -16,18 +16,22 @@ function modeTitle(mode: LeaderboardMode): string {
   return mode === 'ODD_ONE_OUT' ? t('oddOneOutMode') : t('rememberColorMode');
 }
 
+function modeSelectedBgClass(mode: LeaderboardMode): string {
+  return mode === 'ODD_ONE_OUT' ? 'bg-leaderboard-odd' : 'bg-leaderboard-remember';
+}
+
+function modeAccentTextClass(mode: LeaderboardMode): string {
+  return mode === 'ODD_ONE_OUT' ? 'text-leaderboard-odd' : 'text-leaderboard-remember';
+}
+
 function getLeaderboardDisplayName(item: {
-  userId: string;
+  name?: string;
   [key: string]: unknown;
 }): string {
-  const candidateKeys = ['name', 'displayName', 'username'];
-  for (const key of candidateKeys) {
-    const value = item[key];
-    if (typeof value === 'string' && value.trim().length > 0) {
-      return value.trim();
-    }
+  if (typeof item.name === 'string' && item.name.trim().length > 0) {
+    return item.name.trim();
   }
-  return item.userId;
+  return '-';
 }
 
 export function LeaderboardsScreen() {
@@ -56,7 +60,7 @@ export function LeaderboardsScreen() {
               accessibilityLabel={t('goBack')}
               onPress={() => navigation.goBack()}
               className="min-h-[44px] justify-center">
-              <Text className="text-accent">← {t('back')}</Text>
+              <Text className="text-text-primary">← {t('back')}</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
@@ -89,7 +93,7 @@ export function LeaderboardsScreen() {
                   })}
                   onPress={() => setMode(value)}
                   className={`min-h-[44px] flex-1 items-center justify-center rounded-xl px-4 py-3 ${
-                    selected ? 'bg-accent' : 'bg-surface-elevated'
+                    selected ? modeSelectedBgClass(value) : 'bg-surface-elevated'
                   }`}>
                   <Text
                     className={`font-semibold ${
@@ -144,11 +148,13 @@ export function LeaderboardsScreen() {
                       numberOfLines={1}
                       className="text-base font-semibold text-text-primary">
                       {getLeaderboardDisplayName(
-                        item as { userId: string; [key: string]: unknown },
+                        item as { name?: string; [key: string]: unknown },
                       )}
                     </Text>
                   </View>
-                  <Text className="text-lg font-bold text-accent">{item.bestScore}</Text>
+                  <Text className={`text-lg font-bold ${modeAccentTextClass(mode)}`}>
+                    {item.bestScore}
+                  </Text>
                 </View>
               ))
             )}

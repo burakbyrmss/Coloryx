@@ -28,7 +28,7 @@ export function SettingsScreen() {
             accessibilityLabel={t('goBack')}
             onPress={() => navigation.goBack()}
             className="mb-8 min-h-[44px] self-start justify-center">
-            <Text className="text-accent">← {t('back')}</Text>
+            <Text className="text-text-primary">← {t('back')}</Text>
           </Pressable>
 
           <Text className="mb-2 text-2xl font-bold text-text-primary">
