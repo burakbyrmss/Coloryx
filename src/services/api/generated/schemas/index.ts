@@ -6,12 +6,20 @@
  */
 
 export * from './deleteV1Me200';
+export * from './getV1LeaderboardAroundMe200';
+export * from './getV1LeaderboardAroundMe200ItemsItem';
+export * from './getV1LeaderboardAroundMe200ItemsItemMode';
+export * from './getV1LeaderboardAroundMe200Mode';
+export * from './getV1LeaderboardAroundMe200Rank';
+export * from './getV1LeaderboardAroundMeMode';
+export * from './getV1LeaderboardAroundMeParams';
 export * from './getV1Leaderboards200';
 export * from './getV1Leaderboards200ItemsItem';
 export * from './getV1Leaderboards200NextCursor';
 export * from './getV1LeaderboardsMe200';
 export * from './getV1LeaderboardsMe200BestScore';
 export * from './getV1LeaderboardsMe200Mode';
+export * from './getV1LeaderboardsMe200Rank';
 export * from './getV1LeaderboardsMeMode';
 export * from './getV1LeaderboardsMeParams';
 export * from './getV1LeaderboardsMode';

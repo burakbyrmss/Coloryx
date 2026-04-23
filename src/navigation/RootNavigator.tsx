@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { LeaderboardsScreen } from '@/features/leaderboards/screens/LeaderboardsScreen';
 import { HomeScreen } from '@/features/home/screens/HomeScreen';
+import { TemporaryTitleScreen } from '@/features/home/screens/TemporaryTitleScreen';
 import { NameSetupScreen } from '@/features/onboarding/screens/NameSetupScreen';
 import { OddOneOutScreen } from '@/features/oddOneOut/screens/OddOneOutScreen';
 import { RememberColorScreen } from '@/features/rememberColor/screens/RememberColorScreen';
@@ -32,6 +33,7 @@ export function RootNavigator({ initialRouteName }: RootNavigatorProps) {
         }}>
         <Stack.Screen name="NameSetup" component={NameSetupScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="TemporaryTitle" component={TemporaryTitleScreen} />
         <Stack.Screen name="Leaderboards" component={LeaderboardsScreen} />
         <Stack.Screen
           name="OddOneOut"

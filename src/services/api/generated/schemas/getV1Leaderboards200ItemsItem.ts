@@ -9,5 +9,7 @@ export type GetV1Leaderboards200ItemsItem = {
   userId: string;
   name: string;
   bestScore: number;
+  /** @minimum 1 */
+  rank: number;
   updatedAt: string;
 };

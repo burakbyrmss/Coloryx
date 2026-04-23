@@ -22,6 +22,8 @@ import type {
 
 import type {
   DeleteV1Me200,
+  GetV1LeaderboardAroundMe200,
+  GetV1LeaderboardAroundMeParams,
   GetV1Leaderboards200,
   GetV1LeaderboardsMe200,
   GetV1LeaderboardsMeParams,
@@ -1519,6 +1521,204 @@ export function useGetV1LeaderboardsMe<
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
   const queryOptions = getGetV1LeaderboardsMeQueryOptions(params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+/**
+ * @summary Global rank for a user plus up to five leaderboard neighbors above and below (best score first; same rank rules as /leaderboards/me)
+ */
+export type getV1LeaderboardAroundMeResponse200 = {
+  data: GetV1LeaderboardAroundMe200;
+  status: 200;
+};
+
+export type getV1LeaderboardAroundMeResponseSuccess =
+  getV1LeaderboardAroundMeResponse200 & {
+    headers: Headers;
+  };
+export type getV1LeaderboardAroundMeResponse =
+  getV1LeaderboardAroundMeResponseSuccess;
+
+export const getGetV1LeaderboardAroundMeUrl = (
+  params: GetV1LeaderboardAroundMeParams,
+) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/v1/leaderboard/around-me?${stringifiedParams}`
+    : `/v1/leaderboard/around-me`;
+};
+
+export const getV1LeaderboardAroundMe = async (
+  params: GetV1LeaderboardAroundMeParams,
+  options?: RequestInit,
+): Promise<getV1LeaderboardAroundMeResponse> => {
+  return orvalFetch<getV1LeaderboardAroundMeResponse>(
+    getGetV1LeaderboardAroundMeUrl(params),
+    {
+      ...options,
+      method: 'GET',
+    },
+  );
+};
+
+export const getGetV1LeaderboardAroundMeQueryKey = (
+  params?: GetV1LeaderboardAroundMeParams,
+) => {
+  return [`/v1/leaderboard/around-me`, ...(params ? [params] : [])] as const;
+};
+
+export const getGetV1LeaderboardAroundMeQueryOptions = <
+  TData = Awaited<ReturnType<typeof getV1LeaderboardAroundMe>>,
+  TError = unknown,
+>(
+  params: GetV1LeaderboardAroundMeParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getV1LeaderboardAroundMe>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof orvalFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetV1LeaderboardAroundMeQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getV1LeaderboardAroundMe>>
+  > = ({ signal }) =>
+    getV1LeaderboardAroundMe(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getV1LeaderboardAroundMe>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetV1LeaderboardAroundMeQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getV1LeaderboardAroundMe>>
+>;
+export type GetV1LeaderboardAroundMeQueryError = unknown;
+
+export function useGetV1LeaderboardAroundMe<
+  TData = Awaited<ReturnType<typeof getV1LeaderboardAroundMe>>,
+  TError = unknown,
+>(
+  params: GetV1LeaderboardAroundMeParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getV1LeaderboardAroundMe>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getV1LeaderboardAroundMe>>,
+          TError,
+          Awaited<ReturnType<typeof getV1LeaderboardAroundMe>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof orvalFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetV1LeaderboardAroundMe<
+  TData = Awaited<ReturnType<typeof getV1LeaderboardAroundMe>>,
+  TError = unknown,
+>(
+  params: GetV1LeaderboardAroundMeParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getV1LeaderboardAroundMe>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getV1LeaderboardAroundMe>>,
+          TError,
+          Awaited<ReturnType<typeof getV1LeaderboardAroundMe>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof orvalFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetV1LeaderboardAroundMe<
+  TData = Awaited<ReturnType<typeof getV1LeaderboardAroundMe>>,
+  TError = unknown,
+>(
+  params: GetV1LeaderboardAroundMeParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getV1LeaderboardAroundMe>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof orvalFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Global rank for a user plus up to five leaderboard neighbors above and below (best score first; same rank rules as /leaderboards/me)
+ */
+
+export function useGetV1LeaderboardAroundMe<
+  TData = Awaited<ReturnType<typeof getV1LeaderboardAroundMe>>,
+  TError = unknown,
+>(
+  params: GetV1LeaderboardAroundMeParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getV1LeaderboardAroundMe>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof orvalFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetV1LeaderboardAroundMeQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,

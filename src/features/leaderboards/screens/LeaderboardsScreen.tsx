@@ -7,10 +7,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { t } from '@/i18n';
 import type { RootStackParamList } from '@/navigation/types';
-import { useGetV1Leaderboards } from '@/services/api';
+import {
+  useGetV1LeaderboardAroundMe,
+  useGetV1Leaderboards,
+  useGetV1LeaderboardsMe,
+} from '@/services/api';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'Leaderboards'>;
 type LeaderboardMode = 'ODD_ONE_OUT' | 'REMEMBER_COLOR';
+type LeaderboardView = 'GLOBAL' | 'AROUND_ME';
 
 function modeTitle(mode: LeaderboardMode): string {
   return mode === 'ODD_ONE_OUT' ? t('oddOneOutMode') : t('rememberColorMode');
@@ -37,18 +42,52 @@ function getLeaderboardDisplayName(item: {
 export function LeaderboardsScreen() {
   const navigation = useNavigation<Nav>();
   const [mode, setMode] = React.useState<LeaderboardMode>('ODD_ONE_OUT');
+  const [view, setView] = React.useState<LeaderboardView>('GLOBAL');
 
   const oddQuery = useGetV1Leaderboards({
     mode: 'ODD_ONE_OUT',
     limit: 10,
   });
+  const oddMeQuery = useGetV1LeaderboardsMe({
+    mode: 'ODD_ONE_OUT',
+  });
   const rememberQuery = useGetV1Leaderboards({
     mode: 'REMEMBER_COLOR',
     limit: 10,
   });
+  const rememberMeQuery = useGetV1LeaderboardsMe({
+    mode: 'REMEMBER_COLOR',
+  });
 
   const activeQuery = mode === 'ODD_ONE_OUT' ? oddQuery : rememberQuery;
-  const rows = activeQuery.data?.data.items ?? [];
+  const activeMeQuery = mode === 'ODD_ONE_OUT' ? oddMeQuery : rememberMeQuery;
+  const currentUserId = activeMeQuery.data?.data.userId;
+  const oddAroundMeQuery = useGetV1LeaderboardAroundMe(
+    {
+      mode: 'ODD_ONE_OUT',
+      userId: currentUserId ?? '',
+    },
+    {
+      query: {
+        enabled: Boolean(currentUserId),
+      },
+    },
+  );
+  const rememberAroundMeQuery = useGetV1LeaderboardAroundMe(
+    {
+      mode: 'REMEMBER_COLOR',
+      userId: currentUserId ?? '',
+    },
+    {
+      query: {
+        enabled: Boolean(currentUserId),
+      },
+    },
+  );
+  const activeAroundMeQuery =
+    mode === 'ODD_ONE_OUT' ? oddAroundMeQuery : rememberAroundMeQuery;
+  const activeRowsQuery = view === 'AROUND_ME' ? activeAroundMeQuery : activeQuery;
+  const rows = activeRowsQuery.data?.data.items ?? [];
 
   return (
     <ErrorBoundary>
@@ -66,8 +105,14 @@ export function LeaderboardsScreen() {
               accessibilityRole="button"
               accessibilityLabel={t('refreshLeaderboard')}
               onPress={() => {
-                void oddQuery.refetch();
-                void rememberQuery.refetch();
+                oddQuery.refetch().catch(() => undefined);
+                oddMeQuery.refetch().catch(() => undefined);
+                rememberQuery.refetch().catch(() => undefined);
+                rememberMeQuery.refetch().catch(() => undefined);
+                if (currentUserId) {
+                  oddAroundMeQuery.refetch().catch(() => undefined);
+                  rememberAroundMeQuery.refetch().catch(() => undefined);
+                }
               }}
               className="min-h-[44px] justify-center rounded-xl bg-surface-elevated px-4">
               <Text className="text-text-secondary">{t('refresh')}</Text>
@@ -105,56 +150,100 @@ export function LeaderboardsScreen() {
               );
             })}
           </View>
+          <View className="mt-3 flex-row gap-2">
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('showGlobalLeaderboard')}
+              onPress={() => setView('GLOBAL')}
+              className={`min-h-[44px] flex-1 items-center justify-center rounded-xl px-4 py-2 ${
+                view === 'GLOBAL' ? 'bg-surface-elevated' : 'bg-surface'
+              }`}>
+              <Text
+                className={`font-semibold ${
+                  view === 'GLOBAL' ? 'text-text-primary' : 'text-text-muted'
+                }`}>
+                {t('global')}
+              </Text>
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('findMeLeaderboard')}
+              onPress={() => {
+                setView('AROUND_ME');
+                if (currentUserId) {
+                  activeAroundMeQuery.refetch().catch(() => undefined);
+                }
+              }}
+              className={`min-h-[44px] flex-1 items-center justify-center rounded-xl px-4 py-2 ${
+                view === 'AROUND_ME' ? modeSelectedBgClass(mode) : 'bg-surface-elevated'
+              }`}>
+              <Text
+                className={`font-semibold ${
+                  view === 'AROUND_ME' ? 'text-black' : 'text-text-secondary'
+                }`}>
+                {t('findMe')}
+              </Text>
+            </Pressable>
+          </View>
 
           <ScrollView className="mt-4 flex-1" contentContainerClassName="pb-8">
-            {activeQuery.isLoading ? (
+            {activeRowsQuery.isLoading ? (
               <View className="mt-12 items-center">
                 <ActivityIndicator />
                 <Text className="mt-3 text-text-muted">
                   {t('loadingLeaderboard')}
                 </Text>
               </View>
-            ) : activeQuery.isError ? (
+            ) : activeRowsQuery.isError ? (
               <View className="mt-12 rounded-xl bg-surface-elevated px-4 py-4">
                 <Text className="font-semibold text-danger">
                   {t('failedToLoadLeaderboard')}
                 </Text>
                 <Text className="mt-2 text-sm text-text-secondary">
-                  {activeQuery.error instanceof Error
-                    ? activeQuery.error.message
+                  {activeRowsQuery.error instanceof Error
+                    ? activeRowsQuery.error.message
                     : t('unknownError')}
+                </Text>
+              </View>
+            ) : view === 'AROUND_ME' && !currentUserId ? (
+              <View className="mt-12 rounded-xl bg-surface-elevated px-4 py-4">
+                <Text className="font-semibold text-text-primary">
+                  {t('findMeUnavailable')}
                 </Text>
               </View>
             ) : rows.length === 0 ? (
               <View className="mt-12 rounded-xl bg-surface-elevated px-4 py-4">
                 <Text className="font-semibold text-text-primary">
-                  {t('noScoresYet')}
+                  {view === 'AROUND_ME' ? t('noNearbyScores') : t('noScoresYet')}
                 </Text>
                 <Text className="mt-2 text-sm text-text-secondary">
-                  {t('beFirstScore')}
+                  {view === 'AROUND_ME' ? t('tryAgainLater') : t('beFirstScore')}
                 </Text>
               </View>
             ) : (
-              rows.map((item, index) => (
+              rows.map(item => (
                 <View
-                  key={`${item.userId}-${item.updatedAt}`}
+                  key={`${item.userId}-${item.rank}`}
                   className="mb-2 flex-row items-center rounded-xl bg-surface-elevated px-4 py-3">
                   <Text className="w-8 text-base font-semibold text-text-primary">
-                    {index + 1}
+                    {item.rank}
                   </Text>
                   <View className="min-w-0 flex-1">
                     <Text className="text-sm text-text-muted">{t('player')}</Text>
                     <Text
                       numberOfLines={1}
                       className="text-base font-semibold text-text-primary">
-                      {getLeaderboardDisplayName(
+                      {`${getLeaderboardDisplayName(
                         item as { name?: string; [key: string]: unknown },
-                      )}
+                      )}${item.userId === currentUserId ? ' (you)' : ''}`}
                     </Text>
                   </View>
-                  <Text className={`text-lg font-bold ${modeAccentTextClass(mode)}`}>
-                    {item.bestScore}
-                  </Text>
+                  <View className="items-end">
+                    <Text className="text-xs text-text-muted">{t('best')}</Text>
+                    <Text className={`text-lg font-bold ${modeAccentTextClass(mode)}`}>
+                      {item.bestScore}
+                    </Text>
+                  </View>
                 </View>
               ))
             )}
