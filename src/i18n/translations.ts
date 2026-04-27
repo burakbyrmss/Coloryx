@@ -19,7 +19,6 @@ export const translations = {
     haptics: 'Haptics',
     toggleSound: 'Toggle sound',
     toggleHaptics: 'Toggle haptics',
-    resetLocalProgress: 'Reset local progress',
     settingsInfo:
       'Coloryx depends on color perception. If you have difficulty distinguishing subtle differences, try a brighter screen or take breaks.',
     leaderboardsTitle: 'Leaderboards',
@@ -103,7 +102,6 @@ export const translations = {
     haptics: 'Titreşim',
     toggleSound: 'Sesi aç/kapat',
     toggleHaptics: 'Titreşimi aç/kapat',
-    resetLocalProgress: 'Yerel ilerlemeyi sıfırla',
     settingsInfo:
       'Coloryx renk algısına dayanır. İnce farkları ayırt etmekte zorlanıyorsan ekran parlaklığını artır veya mola ver.',
     leaderboardsTitle: 'Liderlik Tablosu',

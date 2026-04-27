@@ -7,8 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { t } from '@/i18n';
 import type { RootStackParamList } from '@/navigation/types';
-import { resetSettings, setHapticsEnabled, setSoundEnabled } from '@/store/slices/settingsSlice';
-import { resetStats } from '@/store/slices/statsSlice';
+import { setHapticsEnabled, setSoundEnabled } from '@/store/slices/settingsSlice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'Settings'>;
@@ -59,19 +58,6 @@ export function SettingsScreen() {
               }}
             />
           </View>
-
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('resetLocalProgress')}
-            onPress={() => {
-              dispatch(resetStats());
-              dispatch(resetSettings());
-            }}
-            className="min-h-[48px] items-center justify-center rounded-xl border border-red-500/40 py-3">
-            <Text className="font-medium text-red-400">
-              {t('resetLocalProgress')}
-            </Text>
-          </Pressable>
         </View>
       </SafeAreaView>
     </ErrorBoundary>
