@@ -2,7 +2,7 @@
 
 /**
  * Increment build number only (x.x.x (n) -> x.x.x (n+1)).
- * Updates: android/app/build.gradle, ios/subnote/Info.plist, ios/subnote.xcodeproj/project.pbxproj
+ * Updates: android/app/build.gradle, ios/ColoryxRN.xcodeproj/project.pbxproj
  */
 
 const fs = require("fs");
@@ -29,22 +29,12 @@ function main() {
   fs.writeFileSync(buildGradlePath, gradle);
   console.log("android/app/build.gradle: versionCode", currentBuild, "->", newBuild);
 
-  // 2. ios/subnote/Info.plist (CFBundleVersion)
-  const infoPlistPath = path.join(root, "ios", "subnote", "Info.plist");
-  let infoPlist = fs.readFileSync(infoPlistPath, "utf8");
-  infoPlist = infoPlist.replace(
-    /<key>CFBundleVersion<\/key>\s*<string>[^<]+<\/string>/,
-    `<key>CFBundleVersion</key>\n    <string>${newBuild}</string>`
-  );
-  fs.writeFileSync(infoPlistPath, infoPlist);
-  console.log("ios/subnote/Info.plist: CFBundleVersion", currentBuild, "->", newBuild);
-
-  // 3. ios/subnote.xcodeproj/project.pbxproj (CURRENT_PROJECT_VERSION)
-  const pbxPath = path.join(root, "ios", "subnote.xcodeproj", "project.pbxproj");
+  // 2. ios/ColoryxRN.xcodeproj/project.pbxproj (CURRENT_PROJECT_VERSION)
+  const pbxPath = path.join(root, "ios", "ColoryxRN.xcodeproj", "project.pbxproj");
   let pbx = fs.readFileSync(pbxPath, "utf8");
   pbx = pbx.replace(/CURRENT_PROJECT_VERSION = \d+;/g, `CURRENT_PROJECT_VERSION = ${newBuild};`);
   fs.writeFileSync(pbxPath, pbx);
-  console.log("ios/subnote.xcodeproj/project.pbxproj: CURRENT_PROJECT_VERSION", currentBuild, "->", newBuild);
+  console.log("ios/ColoryxRN.xcodeproj/project.pbxproj: CURRENT_PROJECT_VERSION", currentBuild, "->", newBuild);
 
   console.log("\nDone. Build number is now", newBuild + ".");
 }
