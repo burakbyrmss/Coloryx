@@ -48,7 +48,11 @@ export function NameSetupScreen() {
       <SafeAreaView className="flex-1 bg-surface">
         <View className="flex-1 px-6 pb-8 pt-8">
           <Text className="text-3xl font-bold tracking-tight text-text-primary">
-            {t('welcomeToColoryx')}
+            {t('welcomeTitlePrefix')}
+            Color
+            <Text className="text-home-odd-bright">y</Text>
+            <Text className="text-home-remember-bright">x</Text>
+            {t('welcomeTitleSuffix')}
           </Text>
           <Text className="mt-3 text-base leading-6 text-text-secondary">
             {t('chooseDisplayName')}
@@ -67,10 +71,11 @@ export function NameSetupScreen() {
               placeholderTextColor="#9CA3AF"
               autoCorrect={false}
               autoCapitalize="words"
+              textAlignVertical="center"
               value={name}
               onChangeText={setName}
               maxLength={USER_NAME_MAX_LENGTH}
-              className="rounded-xl bg-surface px-4 py-3 text-base text-text-primary"
+              className="h-12 rounded-xl bg-surface px-4 text-base leading-6 text-text-primary"
             />
             <Text className="mt-2 text-xs text-text-muted">
               {trimmed.length}/{USER_NAME_MAX_LENGTH}
